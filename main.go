@@ -3,8 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"regexp"
 
 	"github.com/gorilla/mux"
 	"github.com/xanderstrike/plaxt/lib/store"
@@ -26,6 +28,23 @@ func authorize(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(url)
 }
 
+type Account struct {
+	Title string
+}
+
+type Metadata struct {
+	LibrarySectionType string
+	Title              string
+	Year               int
+	Guid               string
+}
+
+type PlexResponse struct {
+	Event    string
+	Account  Account
+	Metadata Metadata
+}
+
 func api(w http.ResponseWriter, r *http.Request) {
 	args := r.URL.Query()
 	id := args["id"][0]
@@ -34,6 +53,21 @@ func api(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(fmt.Sprintf("%s: %s %s", username, access_token, refresh_token))
 
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	re := regexp.MustCompile("({.*})")
+	match := re.FindStringSubmatch(string(body))
+
+	var pr PlexResponse
+	err = json.Unmarshal([]byte(match[0]), &pr)
+	if err != nil {
+		panic(err)
+	}
+	log.Println(pr)
+
 	json.NewEncoder(w).Encode("")
 }
 
@@ -41,7 +75,7 @@ func main() {
 	fmt.Println("Here we go!")
 	router := mux.NewRouter()
 	router.HandleFunc("/authorize", authorize).Methods("GET")
-	router.HandleFunc("/api", api).Methods("GET")
+	router.HandleFunc("/api", api).Methods("POST")
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
