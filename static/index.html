@@ -1,0 +1,28 @@
+<html>
+  <head>
+    <title>Plaxt</title>
+  </head>
+  <body>
+    <h1>Plaxt</h1>
+
+    <input class="js-username" placeholder="Plex Username">
+    <a href="#" class="js-authorize">Authorize with Trakt</a>
+
+    <script
+    src="https://code.jquery.com/jquery-3.2.1.min.js"
+    integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+    crossorigin="anonymous"></script>
+
+    <script>
+      var full = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
+      console.log(full);
+      var authorization_link = "https://trakt.tv/oauth/authorize?client_id=c9a8a36c476dcfe72b46b8be2237e8151486af90dac6b94548c89329f2a190c2&redirect_uri=" + full + "/authorize%3fusername=USERNAME&response_type=code";
+
+      $('.js-authorize').click(function() {
+        var username = $('.js-username').val();
+
+        window.location = authorization_link.replace('USERNAME', username);
+      });
+    </script>
+  </body>
+</html>
