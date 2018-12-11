@@ -9,8 +9,8 @@ import (
 	"regexp"
 
 	"github.com/gorilla/mux"
-	"github.com/xanderstrike/plaxt/lib/store"
-	"github.com/xanderstrike/plaxt/lib/trakt"
+	"github.com/xanderstrike/goplaxt/lib/store"
+	"github.com/xanderstrike/goplaxt/lib/trakt"
 )
 
 const clientId string = "c9a8a36c476dcfe72b46b8be2237e8151486af90dac6b94548c89329f2a190c2"
