@@ -6,9 +6,9 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"regexp"
 
 	"github.com/gorilla/mux"
+	"github.com/xanderstrike/goplaxt/lib/plex"
 	"github.com/xanderstrike/goplaxt/lib/store"
 	"github.com/xanderstrike/goplaxt/lib/trakt"
 )
@@ -28,23 +28,6 @@ func authorize(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(url)
 }
 
-type Account struct {
-	Title string
-}
-
-type Metadata struct {
-	LibrarySectionType string
-	Title              string
-	Year               int
-	Guid               string
-}
-
-type PlexResponse struct {
-	Event    string
-	Account  Account
-	Metadata Metadata
-}
-
 func api(w http.ResponseWriter, r *http.Request) {
 	args := r.URL.Query()
 	id := args["id"][0]
@@ -58,17 +41,11 @@ func api(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	re := regexp.MustCompile("({.*})")
-	match := re.FindStringSubmatch(string(body))
+	re := plex.HandleWebhook(body)
 
-	var pr PlexResponse
-	err = json.Unmarshal([]byte(match[0]), &pr)
-	if err != nil {
-		panic(err)
-	}
-	log.Println(pr)
+	trakt.Handle(re)
 
-	json.NewEncoder(w).Encode("")
+	json.NewEncoder(w).Encode("success")
 }
 
 func main() {
