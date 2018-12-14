@@ -43,7 +43,9 @@ func api(w http.ResponseWriter, r *http.Request) {
 
 	re := plex.HandleWebhook(body)
 
-	trakt.Handle(re, accessToken)
+	if re.Account.Title == username {
+		trakt.Handle(re, accessToken)
+	}
 
 	json.NewEncoder(w).Encode("success")
 }
