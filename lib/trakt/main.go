@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"regexp"
 
@@ -38,6 +39,7 @@ func Handle(pr plex.PlexResponse, accessToken string) {
 	} else if pr.Metadata.LibrarySectionType == "movie" {
 		HandleMovie(pr)
 	}
+	log.Print("Event logged")
 }
 
 type Ids struct {
@@ -69,10 +71,11 @@ type Season struct {
 }
 
 func HandleShow(pr plex.PlexResponse, accessToken string) {
-	fmt.Println("handling show")
 
 	re := regexp.MustCompile("thetvdb://(\\d*)/(\\d*)/(\\d*)")
 	showID := re.FindStringSubmatch(pr.Metadata.Guid)
+
+	log.Print(fmt.Sprintf("Finding show for %s %s %s", showID[1], showID[2], showID[3]))
 
 	url := fmt.Sprintf("https://api.trakt.tv/search/tvdb/%s?type=show", showID[1])
 
@@ -107,6 +110,7 @@ func HandleShow(pr plex.PlexResponse, accessToken string) {
 	scrobbleJSON, _ := json.Marshal(scrobbleObject)
 
 	scrobbleRequest(event, scrobbleJSON, accessToken)
+
 }
 
 type ShowScrobbleBody struct {
