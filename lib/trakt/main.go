@@ -32,15 +32,13 @@ func AuthRequest(username, code, refreshToken, grantType string) map[string]inte
 	return result
 }
 
-func Handle(pr plex.PlexResponse) {
+func Handle(pr plex.PlexResponse, accessToken string) {
 	if pr.Metadata.LibrarySectionType == "show" {
-		HandleShow(pr)
+		HandleShow(pr, accessToken)
 	} else if pr.Metadata.LibrarySectionType == "movie" {
 		HandleMovie(pr)
 	}
 }
-
-// [{"type":"show","score":1000,"show":{"title":"Disenchantment","year":2018,"ids":{"trakt":126558,"slug":"disenchantment","tvdb":340234,"imdb":"tt5363918","tmdb":73021,"tvrage":null}}}]
 
 type Ids struct {
 	Trakt  int    `json:"trakt"`
@@ -58,7 +56,6 @@ type ShowInfo struct {
 	Show Show
 }
 
-// [{"season":1,"number":1,"title":"A Princess, an Elf, and a Demon Walk Into a Bar","ids":{"trakt":2907713,"tvdb":6699345,"imdb":"tt6561570","tmdb":1494890,"tvrage":0}
 type Episode struct {
 	Season int    `json:"season"`
 	Number int    `json:"number"`
@@ -71,7 +68,7 @@ type Season struct {
 	Episodes []Episode
 }
 
-func HandleShow(pr plex.PlexResponse) {
+func HandleShow(pr plex.PlexResponse, accessToken string) {
 	fmt.Println("handling show")
 
 	re := regexp.MustCompile("thetvdb://(\\d*)/(\\d*)/(\\d*)")
@@ -80,12 +77,9 @@ func HandleShow(pr plex.PlexResponse) {
 	url := fmt.Sprintf("https://api.trakt.tv/search/tvdb/%s?type=show", showID[1])
 
 	resp_body := makeRequest(url)
-	fmt.Println(string(resp_body))
 
 	var showInfo []ShowInfo
 	_ = json.Unmarshal(resp_body, &showInfo)
-
-	fmt.Println(showInfo[0].Show.Ids.Trakt)
 
 	url = fmt.Sprintf("https://api.trakt.tv/shows/%d/seasons?extended=episodes", showInfo[0].Show.Ids.Trakt)
 
@@ -93,10 +87,31 @@ func HandleShow(pr plex.PlexResponse) {
 	var seasons []Season
 	_ = json.Unmarshal(resp_body, &seasons)
 
-	fmt.Printf("%+v\n", seasons)
+	event, progress := getAction(pr)
 
-	sweetBytes, _ := json.Marshal(seasons[0].Episodes[0])
-	fmt.Printf(string(sweetBytes))
+	scrobbleObject := ShowScrobbleBody{
+		Progress: progress,
+	}
+
+	for _, season := range seasons {
+		if fmt.Sprintf("%d", season.Number) == showID[2] {
+			for _, episode := range season.Episodes {
+				if fmt.Sprintf("%d", episode.Number) == showID[3] {
+					scrobbleObject.Episode = episode
+					break
+				}
+			}
+		}
+	}
+
+	scrobbleJSON, _ := json.Marshal(scrobbleObject)
+
+	scrobbleRequest(event, scrobbleJSON, accessToken)
+}
+
+type ShowScrobbleBody struct {
+	Episode  Episode `json:"episode"`
+	Progress int     `json:"progress"`
 }
 
 func HandleMovie(pr plex.PlexResponse) {
@@ -118,6 +133,41 @@ func makeRequest(url string) []byte {
 	defer resp.Body.Close()
 	resp_body, _ := ioutil.ReadAll(resp.Body)
 	return resp_body
+}
+
+func scrobbleRequest(action string, body []byte, access_token string) []byte {
+	client := &http.Client{}
+
+	url := fmt.Sprintf("https://api.trakt.tv/scrobble/%s", action)
+
+	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(body))
+
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", access_token))
+	req.Header.Add("trakt-api-version", "2")
+	req.Header.Add("trakt-api-key", clientId)
+
+	resp, _ := client.Do(req)
+
+	defer resp.Body.Close()
+	resp_body, _ := ioutil.ReadAll(resp.Body)
+	return resp_body
+}
+
+func getAction(pr plex.PlexResponse) (string, int) {
+	switch pr.Event {
+	case "media.play":
+		return "start", 0
+	case "media.pause":
+		return "stop", 0
+	case "media.resume":
+		return "start", 0
+	case "media.stop":
+		return "stop", 0
+	case "media.scrobble":
+		return "stop", 90
+	}
+	return "", 0
 }
 
 func handleErr(err error) {

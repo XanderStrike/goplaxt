@@ -32,9 +32,9 @@ func api(w http.ResponseWriter, r *http.Request) {
 	args := r.URL.Query()
 	id := args["id"][0]
 
-	username, access_token, refresh_token, _ := store.GetUser(id)
+	username, accessToken, refreshToken, _ := store.GetUser(id)
 
-	fmt.Println(fmt.Sprintf("%s: %s %s", username, access_token, refresh_token))
+	fmt.Println(fmt.Sprintf("%s: %s %s", username, accessToken, refreshToken))
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -43,7 +43,7 @@ func api(w http.ResponseWriter, r *http.Request) {
 
 	re := plex.HandleWebhook(body)
 
-	trakt.Handle(re)
+	trakt.Handle(re, accessToken)
 
 	json.NewEncoder(w).Encode("success")
 }
