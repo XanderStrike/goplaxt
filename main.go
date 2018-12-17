@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -23,7 +24,7 @@ func authorize(w http.ResponseWriter, r *http.Request) {
 
 	user := store.NewUser(username, result["access_token"].(string), result["refresh_token"].(string))
 
-	url := fmt.Sprintf("http://localhost:8000/api?id=%s", user.ID)
+	url := fmt.Sprintf("%s/api?id=%s", os.Getenv("REDIRECT_URI"), user.ID)
 
 	log.Print(fmt.Sprintf("Authorized as %s", user.ID))
 	json.NewEncoder(w).Encode(url)
@@ -64,5 +65,5 @@ func main() {
 	router.HandleFunc("/authorize", authorize).Methods("GET")
 	router.HandleFunc("/api", api).Methods("POST")
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
-	log.Fatal(http.ListenAndServe(":8000", router))
+	log.Fatal(http.ListenAndServe("0.0.0.0:8000", router))
 }

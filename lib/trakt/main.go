@@ -21,7 +21,7 @@ func AuthRequest(username, code, refreshToken, grantType string) map[string]inte
 		"refresh_token": refreshToken,
 		"client_id":     os.Getenv("TRAKT_ID"),
 		"client_secret": os.Getenv("TRAKT_SECRET"),
-		"redirect_uri":  fmt.Sprintf("http://localhost:8000/authorize?username=%s", string(username)),
+		"redirect_uri":  fmt.Sprintf("%s/authorize?username=%s", os.Getenv("REDIRECT_URI"), string(username)),
 		"grant_type":    grantType,
 	}
 	jsonValue, _ := json.Marshal(values)
