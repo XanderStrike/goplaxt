@@ -27,10 +27,13 @@ func AuthRequest(username, code, refreshToken, grantType string) map[string]inte
 	}
 	jsonValue, _ := json.Marshal(values)
 
-	resp, _ := http.Post("https://api.trakt.tv/oauth/token", "application/json", bytes.NewBuffer(jsonValue))
+	resp, err := http.Post("https://api.trakt.tv/oauth/token", "application/json", bytes.NewBuffer(jsonValue))
+	handleErr(err)
 
 	var result map[string]interface{}
-	json.NewDecoder(resp.Body).Decode(&result)
+	err = json.NewDecoder(resp.Body).Decode(&result)
+	handleErr(err)
+
 	return result
 }
 
@@ -51,7 +54,8 @@ func HandleShow(pr plex.PlexResponse, accessToken string) {
 		Episode:  findEpisode(pr),
 	}
 
-	scrobbleJSON, _ := json.Marshal(scrobbleObject)
+	scrobbleJSON, err := json.Marshal(scrobbleObject)
+	handleErr(err)
 
 	scrobbleRequest(event, scrobbleJSON, accessToken)
 }
@@ -80,13 +84,15 @@ func findEpisode(pr plex.PlexResponse) Episode {
 	resp_body := makeRequest(url)
 
 	var showInfo []ShowInfo
-	_ = json.Unmarshal(resp_body, &showInfo)
+	err := json.Unmarshal(resp_body, &showInfo)
+	handleErr(err)
 
 	url = fmt.Sprintf("https://api.trakt.tv/shows/%d/seasons?extended=episodes", showInfo[0].Show.Ids.Trakt)
 
 	resp_body = makeRequest(url)
 	var seasons []Season
-	_ = json.Unmarshal(resp_body, &seasons)
+	err = json.Unmarshal(resp_body, &seasons)
+	handleErr(err)
 
 	for _, season := range seasons {
 		if fmt.Sprintf("%d", season.Number) == showID[2] {
@@ -108,7 +114,8 @@ func findMovie(pr plex.PlexResponse) Movie {
 
 	var results []MovieSearchResult
 
-	json.Unmarshal(resp_body, &results)
+	err := json.Unmarshal(resp_body, &results)
+	handleErr(err)
 
 	for _, result := range results {
 		if result.Movie.Year == pr.Metadata.Year {
@@ -121,7 +128,8 @@ func findMovie(pr plex.PlexResponse) Movie {
 func makeRequest(url string) []byte {
 	client := &http.Client{}
 
-	req, _ := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest("GET", url, nil)
+	handleErr(err)
 
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("trakt-api-version", "2")
@@ -140,7 +148,8 @@ func scrobbleRequest(action string, body []byte, access_token string) []byte {
 
 	url := fmt.Sprintf("https://api.trakt.tv/scrobble/%s", action)
 
-	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(body))
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
+	handleErr(err)
 
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", access_token))
