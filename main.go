@@ -20,11 +20,11 @@ func authorize(w http.ResponseWriter, r *http.Request) {
 	code := args["code"][0]
 	result := trakt.AuthRequest(username, code, "", "authorization_code")
 
-	id, _ := store.NewUser(username, result["access_token"].(string), result["refresh_token"].(string))
+	user := store.NewUser(username, result["access_token"].(string), result["refresh_token"].(string))
 
-	url := fmt.Sprintf("http://localhost:8000/api?id=%s", id)
+	url := fmt.Sprintf("http://localhost:8000/api?id=%s", user.ID)
 
-	log.Print(fmt.Sprintf("Authorized as %s", id))
+	log.Print(fmt.Sprintf("Authorized as %s", user.ID))
 	json.NewEncoder(w).Encode(url)
 }
 
@@ -33,7 +33,7 @@ func api(w http.ResponseWriter, r *http.Request) {
 	id := args["id"][0]
 	log.Print(fmt.Sprintf("Webhook call for %s", id))
 
-	username, accessToken, _, _ := store.GetUser(id)
+	user := store.GetUser(id)
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -42,8 +42,8 @@ func api(w http.ResponseWriter, r *http.Request) {
 
 	re := plex.HandleWebhook(body)
 
-	if re.Account.Title == username {
-		trakt.Handle(re, accessToken)
+	if re.Account.Title == user.Username {
+		trakt.Handle(re, user)
 	}
 
 	json.NewEncoder(w).Encode("success")

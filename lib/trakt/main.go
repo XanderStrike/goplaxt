@@ -11,6 +11,7 @@ import (
 	"regexp"
 
 	"github.com/xanderstrike/goplaxt/lib/plex"
+	"github.com/xanderstrike/goplaxt/lib/store"
 )
 
 const clientId string = "c9a8a36c476dcfe72b46b8be2237e8151486af90dac6b94548c89329f2a190c2"
@@ -37,11 +38,11 @@ func AuthRequest(username, code, refreshToken, grantType string) map[string]inte
 	return result
 }
 
-func Handle(pr plex.PlexResponse, accessToken string) {
+func Handle(pr plex.PlexResponse, user store.User) {
 	if pr.Metadata.LibrarySectionType == "show" {
-		HandleShow(pr, accessToken)
+		HandleShow(pr, user.AccessToken)
 	} else if pr.Metadata.LibrarySectionType == "movie" {
-		HandleMovie(pr, accessToken)
+		HandleMovie(pr, user.AccessToken)
 	}
 	log.Print("Event logged")
 }
