@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/xanderstrike/goplaxt/lib/plex"
@@ -34,6 +35,14 @@ func api(w http.ResponseWriter, r *http.Request) {
 	log.Print(fmt.Sprintf("Webhook call for %s", id))
 
 	user := store.GetUser(id)
+
+	tokenAge := time.Since(user.Updated).Hours()
+	if tokenAge > 1440 { // tokens expire after 3 months, so we refresh after 2
+		log.Println("User access token outdated, refreshing...")
+		result := trakt.AuthRequest(user.Username, "", user.RefreshToken, "refresh_token")
+		user = store.UpdateUser(user, result["access_token"].(string), result["refresh_token"].(string))
+		log.Println("Refreshed, continuing")
+	}
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {

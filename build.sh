@@ -8,3 +8,5 @@ docker run --rm -v "$PWD":/go/src/github.com/xanderstrike/goplaxt -w /go/src/git
 
 # build docker image
 docker build -t xanderstrike/goplaxt .
+
+rm goplaxt-docker

@@ -25,11 +25,25 @@ func NewUser(username, accessToken, refreshToken string) User {
 		RefreshToken: refreshToken,
 		Updated:      time.Now(),
 	}
-	writeField(id, "username", username)
-	writeField(id, "access", accessToken)
-	writeField(id, "refresh", refreshToken)
-	writeField(id, "updated", user.Updated.Format("01-02-2006"))
+
+	writeUser(user)
 	return user
+}
+
+func UpdateUser(user User, accessToken, refreshToken string) User {
+	user.AccessToken = accessToken
+	user.RefreshToken = refreshToken
+	user.Updated = time.Now()
+
+	writeUser(user)
+	return user
+}
+
+func writeUser(user User) {
+	writeField(user.ID, "username", user.Username)
+	writeField(user.ID, "access", user.AccessToken)
+	writeField(user.ID, "refresh", user.RefreshToken)
+	writeField(user.ID, "updated", user.Updated.Format("01-02-2006"))
 }
 
 func writeField(id, field, value string) {
