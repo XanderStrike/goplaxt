@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"regexp"
 
 	"github.com/xanderstrike/goplaxt/lib/plex"
@@ -37,41 +38,38 @@ func Handle(pr plex.PlexResponse, accessToken string) {
 	if pr.Metadata.LibrarySectionType == "show" {
 		HandleShow(pr, accessToken)
 	} else if pr.Metadata.LibrarySectionType == "movie" {
-		HandleMovie(pr)
+		HandleMovie(pr, accessToken)
 	}
 	log.Print("Event logged")
 }
 
-type Ids struct {
-	Trakt  int    `json:"trakt"`
-	Tvdb   int    `json:"tvdb"`
-	Imdb   string `json:"imdb"`
-	Tmdb   int    `json:"tmdb"`
-	Tvrage int    `json:"tvrage"`
-}
-
-type Show struct {
-	Ids Ids
-}
-
-type ShowInfo struct {
-	Show Show
-}
-
-type Episode struct {
-	Season int    `json:"season"`
-	Number int    `json:"number"`
-	Title  string `json:"title"`
-	Ids    Ids    `json:"ids"`
-}
-
-type Season struct {
-	Number   int
-	Episodes []Episode
-}
-
 func HandleShow(pr plex.PlexResponse, accessToken string) {
+	event, progress := getAction(pr)
 
+	scrobbleObject := ShowScrobbleBody{
+		Progress: progress,
+		Episode:  findEpisode(pr),
+	}
+
+	scrobbleJSON, _ := json.Marshal(scrobbleObject)
+
+	scrobbleRequest(event, scrobbleJSON, accessToken)
+}
+
+func HandleMovie(pr plex.PlexResponse, accessToken string) {
+	event, progress := getAction(pr)
+
+	scrobbleObject := MovieScrobbleBody{
+		Progress: progress,
+		Movie:    findMovie(pr),
+	}
+
+	scrobbleJSON, _ := json.Marshal(scrobbleObject)
+
+	scrobbleRequest(event, scrobbleJSON, accessToken)
+}
+
+func findEpisode(pr plex.PlexResponse) Episode {
 	re := regexp.MustCompile("thetvdb://(\\d*)/(\\d*)/(\\d*)")
 	showID := re.FindStringSubmatch(pr.Metadata.Guid)
 
@@ -90,36 +88,34 @@ func HandleShow(pr plex.PlexResponse, accessToken string) {
 	var seasons []Season
 	_ = json.Unmarshal(resp_body, &seasons)
 
-	event, progress := getAction(pr)
-
-	scrobbleObject := ShowScrobbleBody{
-		Progress: progress,
-	}
-
 	for _, season := range seasons {
 		if fmt.Sprintf("%d", season.Number) == showID[2] {
 			for _, episode := range season.Episodes {
 				if fmt.Sprintf("%d", episode.Number) == showID[3] {
-					scrobbleObject.Episode = episode
-					break
+					return episode
 				}
 			}
 		}
 	}
-
-	scrobbleJSON, _ := json.Marshal(scrobbleObject)
-
-	scrobbleRequest(event, scrobbleJSON, accessToken)
-
+	panic("Could not find episode!")
 }
 
-type ShowScrobbleBody struct {
-	Episode  Episode `json:"episode"`
-	Progress int     `json:"progress"`
-}
+func findMovie(pr plex.PlexResponse) Movie {
+	log.Print(fmt.Sprintf("Finding movie for %s (%d)", pr.Metadata.Title, pr.Metadata.Year))
+	url := fmt.Sprintf("https://api.trakt.tv/search/movie?query=%s", url.PathEscape(pr.Metadata.Title))
 
-func HandleMovie(pr plex.PlexResponse) {
-	fmt.Println("handling movie")
+	resp_body := makeRequest(url)
+
+	var results []MovieSearchResult
+
+	json.Unmarshal(resp_body, &results)
+
+	for _, result := range results {
+		if result.Movie.Year == pr.Metadata.Year {
+			return result.Movie
+		}
+	}
+	panic("Could not find movie!")
 }
 
 func makeRequest(url string) []byte {

@@ -13,9 +13,6 @@ import (
 	"github.com/xanderstrike/goplaxt/lib/trakt"
 )
 
-const clientId string = "c9a8a36c476dcfe72b46b8be2237e8151486af90dac6b94548c89329f2a190c2"
-const clientSecret string = "852aa926322f30d54d98d3693a95dfbf13efcaa7ce18f2fc1ad8b21a8463db51"
-
 func authorize(w http.ResponseWriter, r *http.Request) {
 	args := r.URL.Query()
 	username := args["username"][0]

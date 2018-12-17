@@ -5,23 +5,6 @@ import (
 	"regexp"
 )
 
-type Account struct {
-	Title string
-}
-
-type Metadata struct {
-	LibrarySectionType string
-	Title              string
-	Year               int
-	Guid               string
-}
-
-type PlexResponse struct {
-	Event    string
-	Account  Account
-	Metadata Metadata
-}
-
 func HandleWebhook(body []byte) PlexResponse {
 	re := regexp.MustCompile("({.*})")
 	match := re.FindStringSubmatch(string(body))
