@@ -65,8 +65,10 @@ func api(w http.ResponseWriter, r *http.Request) {
 
 	re := plex.HandleWebhook(body)
 
-	if re.Account.Title == user.Username {
+	if strings.ToLower(re.Account.Title) == user.Username {
 		trakt.Handle(re, user)
+	} else {
+		log.Println(fmt.Sprintf("Plex username %s does not equal %s, skipping", strings.ToLower(re.Account.Title), user.Username))
 	}
 
 	json.NewEncoder(w).Encode("success")
