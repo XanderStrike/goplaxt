@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -14,6 +15,11 @@ import (
 	"github.com/xanderstrike/goplaxt/lib/store"
 	"github.com/xanderstrike/goplaxt/lib/trakt"
 )
+
+type AuthorizePage struct {
+	Authorized bool
+	URL        string
+}
 
 func authorize(w http.ResponseWriter, r *http.Request) {
 	args := r.URL.Query()
@@ -27,7 +33,13 @@ func authorize(w http.ResponseWriter, r *http.Request) {
 	url := fmt.Sprintf("%s/api?id=%s", os.Getenv("REDIRECT_URI"), user.ID)
 
 	log.Print(fmt.Sprintf("Authorized as %s", user.ID))
-	json.NewEncoder(w).Encode(url)
+
+	tmpl := template.Must(template.ParseFiles("static/index.html"))
+	data := AuthorizePage{
+		Authorized: true,
+		URL:        url,
+	}
+	tmpl.Execute(w, data)
 }
 
 func api(w http.ResponseWriter, r *http.Request) {
@@ -64,6 +76,13 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/authorize", authorize).Methods("GET")
 	router.HandleFunc("/api", api).Methods("POST")
-	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
+	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		tmpl := template.Must(template.ParseFiles("static/index.html"))
+		data := AuthorizePage{
+			Authorized: false,
+			URL:        "https://plaxt.astandke.com/api?id=generate-your-own-silly",
+		}
+		tmpl.Execute(w, data)
+	}).Methods("GET")
 	log.Fatal(http.ListenAndServe("0.0.0.0:8000", router))
 }
