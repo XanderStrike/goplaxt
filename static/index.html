@@ -66,7 +66,7 @@
     {{else}}
       <h3>Step 1: Authorize with Trakt</h3>
       <p>This will take you to trakt.tv, then they'll send you back here.</p>
-      <form class="authform" action="#">
+      <form class="authform js-authform" action="#">
         <input class="js-username" placeholder="Plex Username"><br><br>
         <span class="button js-authorize">Authorize</span>
       </form>
@@ -109,8 +109,13 @@
 
       $('.js-authorize').click(function() {
         var username = $('.js-username').val();
-
         window.location = authorization_link.replace('USERNAME', username);
+      });
+
+      $('.js-authform').submit(function(e) {
+        var username = $('.js-username').val();
+        window.location = authorization_link.replace('USERNAME', username);
+        return false;
       });
     </script>
   </body>
