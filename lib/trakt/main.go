@@ -29,6 +29,10 @@ func AuthRequest(username, code, refreshToken, grantType string) map[string]inte
 	resp, err := http.Post("https://api.trakt.tv/oauth/token", "application/json", bytes.NewBuffer(jsonValue))
 	handleErr(err)
 
+	if resp.Status != "200 OK" {
+		log.Println(fmt.Sprintf("Got a %s, full response:\n%v", resp.Status, resp))
+	}
+
 	var result map[string]interface{}
 	err = json.NewDecoder(resp.Body).Decode(&result)
 	handleErr(err)
