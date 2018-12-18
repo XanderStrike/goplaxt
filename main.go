@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -23,7 +24,7 @@ type AuthorizePage struct {
 
 func authorize(w http.ResponseWriter, r *http.Request) {
 	args := r.URL.Query()
-	username := args["username"][0]
+	username := strings.ToLower(args["username"][0])
 	log.Print(fmt.Sprintf("Handling auth request for %s", username))
 	code := args["code"][0]
 	result := trakt.AuthRequest(username, code, "", "authorization_code")

@@ -3,6 +3,7 @@ package store
 import (
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/peterbourgon/diskv"
@@ -57,7 +58,7 @@ func GetUser(id string) User {
 	updated, _ := time.Parse("01-02-2006", readField(id, "updated"))
 	user := User{
 		ID:           id,
-		Username:     readField(id, "username"),
+		Username:     strings.ToLower(readField(id, "username")),
 		AccessToken:  readField(id, "access"),
 		RefreshToken: readField(id, "refresh"),
 		Updated:      updated,
