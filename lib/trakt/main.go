@@ -16,7 +16,6 @@ import (
 )
 
 func AuthRequest(username, code, refreshToken, grantType string) map[string]interface{} {
-	fmt.Printf(fmt.Sprintf("%s/authorize?username=%s", os.Getenv("REDIRECT_URI"), username))
 	values := map[string]string{
 		"code":          code,
 		"refresh_token": refreshToken,

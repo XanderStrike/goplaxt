@@ -20,6 +20,7 @@ import (
 type AuthorizePage struct {
 	Authorized bool
 	URL        string
+	ClientID   string
 }
 
 func authorize(w http.ResponseWriter, r *http.Request) {
@@ -39,6 +40,7 @@ func authorize(w http.ResponseWriter, r *http.Request) {
 	data := AuthorizePage{
 		Authorized: true,
 		URL:        url,
+		ClientID:   os.Getenv("TRAKT_ID"),
 	}
 	tmpl.Execute(w, data)
 }
@@ -84,6 +86,7 @@ func main() {
 		data := AuthorizePage{
 			Authorized: false,
 			URL:        "https://plaxt.astandke.com/api?id=generate-your-own-silly",
+			ClientID:   os.Getenv("TRAKT_ID"),
 		}
 		tmpl.Execute(w, data)
 	}).Methods("GET")
