@@ -148,5 +148,10 @@ func main() {
 		}
 		tmpl.Execute(w, data)
 	}).Methods("GET")
-	log.Fatal(http.ListenAndServe("0.0.0.0:8000", router))
+	listen := os.Getenv("LISTEN")
+	if listen == "" {
+		listen = "0.0.0.0:8000"
+	}
+	log.Print("Started on " + listen + "!")
+	log.Fatal(http.ListenAndServe(listen, router))
 }
