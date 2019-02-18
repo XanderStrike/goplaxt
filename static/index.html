@@ -103,9 +103,7 @@
     crossorigin="anonymous"></script>
 
     <script>
-      var full = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
-      console.log(full);
-      var authorization_link = "https://trakt.tv/oauth/authorize?client_id={{.ClientID}}&redirect_uri=" + full + "/authorize%3fusername=USERNAME&response_type=code";
+      var authorization_link = "https://trakt.tv/oauth/authorize?client_id={{.ClientID}}&redirect_uri={{.SelfRoot}}/authorize%3fusername=USERNAME&response_type=code";
 
       $('.js-authorize').click(function() {
         var username = $('.js-username').val().toLowerCase();
