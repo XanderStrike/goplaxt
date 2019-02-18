@@ -97,8 +97,8 @@ func api(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode("success")
 }
 
-func AllowedHostsHandler(allowedHostnames string) func(http.Handler) http.Handler {
-	allowedHosts := strings.Split(regexp.MustCompile("https://|http://").ReplaceAllString(strings.ToLower(allowedHostnames), ""), ",")
+func allowedHostsHandler(allowedHostnames string) func(http.Handler) http.Handler {
+	allowedHosts := strings.Split(regexp.MustCompile("https://|http://|\\s+").ReplaceAllString(strings.ToLower(allowedHostnames), ""), ",")
 	log.Println("Allowed Hostnames:", allowedHosts)
 	return func(h http.Handler) http.Handler {
 		fn := func(w http.ResponseWriter, r *http.Request) {
@@ -111,7 +111,7 @@ func AllowedHostsHandler(allowedHostnames string) func(http.Handler) http.Handle
 				}
 			}
 			if !isAllowedHost {
-				w.WriteHeader(http.StatusBadRequest)
+				w.WriteHeader(http.StatusUnauthorized)
 				w.Header().Set("Content-Type", "text/plain")
 				fmt.Fprintf(w, "Oh no!")
 				return
@@ -128,7 +128,14 @@ func main() {
 	// Assumption: Behind a proper web server (nginx/traefik, etc) that removes/replaces trusted headers
 	router.Use(handlers.ProxyHeaders)
 	// which hostnames we are allowing
-	router.Use(AllowedHostsHandler(os.Getenv("REDIRECT_URI")))
+	// REDIRECT_URI = old legacy list
+	// ALLOWED_HOSTNAMES = new accurate config variable
+	// No env = all hostnames
+	if os.Getenv("REDIRECT_URI") != "" {
+		router.Use(allowedHostsHandler(os.Getenv("REDIRECT_URI")))
+	} else if os.Getenv("ALLOWED_HOSTNAMES") != "" {
+		router.Use(allowedHostsHandler(os.Getenv("ALLOWED_HOSTNAMES")))
+	}
 	router.HandleFunc("/authorize", authorize).Methods("GET")
 	router.HandleFunc("/api", api).Methods("POST")
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {

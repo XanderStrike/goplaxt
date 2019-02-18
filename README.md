@@ -26,7 +26,7 @@ Once you have that, creating your container is a snap:
       -v <path to configs>:/app/keystore \
       -e TRAKT_ID=<trakt_id> \
       -e TRAKT_SECRET=<trakt_secret> \
-      -e REDIRECT_URI=<your redirect uri (without /authorize)> \
+      -e ALLOWED_HOSTNAME=<your public hostname> \
       -p 8000:8000 \
       xanderstrike/goplaxt:latest
 

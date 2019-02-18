@@ -41,3 +41,45 @@ func TestSelfRoot(t *testing.T) {
 	handlers.ProxyHeaders(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})).ServeHTTP(rr, r)
 	assert.Equal(t, "https://foo.bar", SelfRoot(r))
 }
+
+func TestAllowedHostsHandler_single_hostname(t *testing.T) {
+	f := allowedHostsHandler("foo.bar")
+
+	rr := httptest.NewRecorder()
+	r, err := http.NewRequest("GET", "/", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	r.Host = "foo.bar"
+
+	f(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})).ServeHTTP(rr, r)
+	assert.Equal(t, http.StatusOK, rr.Result().StatusCode)
+}
+
+func TestAllowedHostsHandler_multiple_hostnames(t *testing.T) {
+	f := allowedHostsHandler("foo.bar, bar.foo")
+
+	rr := httptest.NewRecorder()
+	r, err := http.NewRequest("GET", "/", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	r.Host = "bar.foo"
+
+	f(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})).ServeHTTP(rr, r)
+	assert.Equal(t, http.StatusOK, rr.Result().StatusCode)
+}
+
+func TestAllowedHostsHandler_mismatch_hostname(t *testing.T) {
+	f := allowedHostsHandler("unknown.host")
+
+	rr := httptest.NewRecorder()
+	r, err := http.NewRequest("GET", "/", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	r.Host = "known.host"
+
+	f(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})).ServeHTTP(rr, r)
+	assert.Equal(t, http.StatusUnauthorized, rr.Result().StatusCode)
+}
