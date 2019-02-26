@@ -1,5 +1,5 @@
 hash: f68ebf48f0a3f9565d9c8fc7d79f1967e49b9818726943788b1886ee08e14ccd
-updated: 2019-02-26T03:49:48.5985747Z
+updated: 2019-02-26T04:06:05.3877647Z
 imports:
 - name: github.com/google/btree
   version: 4030bb1f1f0c35b30ca7009e9ebd06849dd45306
@@ -9,6 +9,8 @@ imports:
   version: 8559a4f775fc329165fe32bd4c2543de8ada8fce
 - name: github.com/peterbourgon/diskv
   version: 0646ccaebea1ed1539efcab30cae44019090093f
+- name: github.com/xanderstrike/plexhooks
+  version: 119c6bab345809277b8e3eefb5ee1fde32bf15ed
 testImports:
 - name: github.com/davecgh/go-spew
   version: d8f796af33cc11cb798c1aaeb27a4ebc5099927d

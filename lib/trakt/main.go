@@ -11,8 +11,8 @@ import (
 	"os"
 	"regexp"
 
-	"github.com/xanderstrike/goplaxt/lib/plex"
 	"github.com/xanderstrike/goplaxt/lib/store"
+	"github.com/xanderstrike/plexhooks"
 )
 
 func AuthRequest(root, username, code, refreshToken, grantType string) map[string]interface{} {
@@ -40,7 +40,7 @@ func AuthRequest(root, username, code, refreshToken, grantType string) map[strin
 	return result
 }
 
-func Handle(pr plex.PlexResponse, user store.User) {
+func Handle(pr plexhooks.PlexResponse, user store.User) {
 	if pr.Metadata.LibrarySectionType == "show" {
 		HandleShow(pr, user.AccessToken)
 	} else if pr.Metadata.LibrarySectionType == "movie" {
@@ -49,7 +49,7 @@ func Handle(pr plex.PlexResponse, user store.User) {
 	log.Print("Event logged")
 }
 
-func HandleShow(pr plex.PlexResponse, accessToken string) {
+func HandleShow(pr plexhooks.PlexResponse, accessToken string) {
 	event, progress := getAction(pr)
 
 	scrobbleObject := ShowScrobbleBody{
@@ -63,7 +63,7 @@ func HandleShow(pr plex.PlexResponse, accessToken string) {
 	scrobbleRequest(event, scrobbleJSON, accessToken)
 }
 
-func HandleMovie(pr plex.PlexResponse, accessToken string) {
+func HandleMovie(pr plexhooks.PlexResponse, accessToken string) {
 	event, progress := getAction(pr)
 
 	scrobbleObject := MovieScrobbleBody{
@@ -76,7 +76,7 @@ func HandleMovie(pr plex.PlexResponse, accessToken string) {
 	scrobbleRequest(event, scrobbleJSON, accessToken)
 }
 
-func findEpisode(pr plex.PlexResponse) Episode {
+func findEpisode(pr plexhooks.PlexResponse) Episode {
 	re := regexp.MustCompile("thetvdb://(\\d*)/(\\d*)/(\\d*)")
 	showID := re.FindStringSubmatch(pr.Metadata.Guid)
 
@@ -109,7 +109,7 @@ func findEpisode(pr plex.PlexResponse) Episode {
 	panic("Could not find episode!")
 }
 
-func findMovie(pr plex.PlexResponse) Movie {
+func findMovie(pr plexhooks.PlexResponse) Movie {
 	log.Print(fmt.Sprintf("Finding movie for %s (%d)", pr.Metadata.Title, pr.Metadata.Year))
 	url := fmt.Sprintf("https://api.trakt.tv/search/movie?query=%s", url.PathEscape(pr.Metadata.Title))
 
@@ -166,7 +166,7 @@ func scrobbleRequest(action string, body []byte, access_token string) []byte {
 	return resp_body
 }
 
-func getAction(pr plex.PlexResponse) (string, int) {
+func getAction(pr plexhooks.PlexResponse) (string, int) {
 	switch pr.Event {
 	case "media.play":
 		return "start", 0

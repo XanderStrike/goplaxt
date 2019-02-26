@@ -15,9 +15,9 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/xanderstrike/goplaxt/lib/plex"
 	"github.com/xanderstrike/goplaxt/lib/store"
 	"github.com/xanderstrike/goplaxt/lib/trakt"
+	"github.com/xanderstrike/plexhooks"
 )
 
 type AuthorizePage struct {
@@ -86,7 +86,14 @@ func api(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	re := plex.HandleWebhook(body)
+	regex := regexp.MustCompile("({.*})") // not the best way really
+	match := regex.FindStringSubmatch(string(body))
+	re, err := plexhooks.ParseWebhook([]byte(match[0]))
+	if err != nil {
+		panic(err)
+	}
+
+	// re := plexhooks.ParseWebhook([]byte(match[0]))
 
 	if strings.ToLower(re.Account.Title) == user.Username {
 		trakt.Handle(re, user)
