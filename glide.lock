@@ -1,10 +1,24 @@
 hash: f68ebf48f0a3f9565d9c8fc7d79f1967e49b9818726943788b1886ee08e14ccd
-updated: 2018-12-14T04:46:41.2120979Z
+updated: 2019-02-26T03:49:48.5985747Z
 imports:
 - name: github.com/google/btree
   version: 4030bb1f1f0c35b30ca7009e9ebd06849dd45306
+- name: github.com/gorilla/handlers
+  version: 7e6a874cdc0efb71a260254cc0e30d5415b6a5bb
 - name: github.com/gorilla/mux
-  version: d2b5d13b9260193b5a5649e9f47fda645bd2bd1d
+  version: 8559a4f775fc329165fe32bd4c2543de8ada8fce
 - name: github.com/peterbourgon/diskv
   version: 0646ccaebea1ed1539efcab30cae44019090093f
-testImports: []
+testImports:
+- name: github.com/davecgh/go-spew
+  version: d8f796af33cc11cb798c1aaeb27a4ebc5099927d
+  subpackages:
+  - spew
+- name: github.com/pmezard/go-difflib
+  version: 5d4384ee4fb2527b0a1256a821ebfc92f91efefc
+  subpackages:
+  - difflib
+- name: github.com/stretchr/testify
+  version: 3f658bd5ac42cc0b5de5b427e95a480d5726ea76
+  subpackages:
+  - assert

@@ -52,6 +52,18 @@ func (r *Route) Match(req *http.Request, match *RouteMatch) bool {
 				matchErr = ErrMethodMismatch
 				continue
 			}
+
+			// Ignore ErrNotFound errors. These errors arise from match call
+			// to Subrouters.
+			//
+			// This prevents subsequent matching subrouters from failing to
+			// run middleware. If not ignored, the middleware would see a
+			// non-nil MatchErr and be skipped, even when there was a
+			// matching route.
+			if match.MatchErr == ErrNotFound {
+				match.MatchErr = nil
+			}
+
 			matchErr = nil
 			return false
 		}
@@ -371,7 +383,7 @@ func (r *Route) PathPrefix(tpl string) *Route {
 // The above route will only match if the URL contains the defined queries
 // values, e.g.: ?foo=bar&id=42.
 //
-// It the value is an empty string, it will match any value if the key is set.
+// If the value is an empty string, it will match any value if the key is set.
 //
 // Variables can define an optional regexp pattern to be matched:
 //
