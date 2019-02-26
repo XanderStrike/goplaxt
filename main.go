@@ -52,7 +52,7 @@ func authorize(w http.ResponseWriter, r *http.Request) {
 
 	user := store.NewUser(username, result["access_token"].(string), result["refresh_token"].(string))
 
-	url := fmt.Sprintf("%s/api?id=%s", os.Getenv("REDIRECT_URI"), user.ID)
+	url := fmt.Sprintf("%s/api?id=%s", SelfRoot(r), user.ID)
 
 	log.Print(fmt.Sprintf("Authorized as %s", user.ID))
 
