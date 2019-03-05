@@ -11,8 +11,15 @@ import (
 // DiskStore is a storage engine that writes to the disk
 type DiskStore struct{}
 
+// NewDiskStore will instantiate the disk storage
 func NewDiskStore() *DiskStore {
 	return &DiskStore{}
+}
+
+// Ping will check if the connection works right
+func (s DiskStore) Ping() error {
+	// TODO not sure what can fail here
+	return nil
 }
 
 // WriteUser will write a user object to disk

@@ -64,3 +64,14 @@ func TestSavingUser(t *testing.T) {
 
 	assert.EqualValues(t, string(expected), string(actual))
 }
+
+func TestPing(t *testing.T) {
+	s, err := miniredis.Run()
+	if err != nil {
+		panic(err)
+	}
+	defer s.Close()
+
+	store := NewRedisStore(NewRedisClient(s.Addr(), ""))
+	assert.Equal(t, store.Ping(), nil)
+}

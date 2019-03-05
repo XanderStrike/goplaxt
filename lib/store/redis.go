@@ -35,6 +35,12 @@ func NewRedisStore(client redis.Client) RedisStore {
 	}
 }
 
+// Ping will check if the connection works right
+func (s RedisStore) Ping() error {
+	_, err := s.client.Ping().Result()
+	return err
+}
+
 // WriteUser will write a user object to redis
 func (s RedisStore) WriteUser(user User) {
 	data := make(map[string]interface{})

@@ -133,6 +133,17 @@ func allowedHostsHandler(allowedHostnames string) func(http.Handler) http.Handle
 	}
 }
 
+func healthcheck(w http.ResponseWriter, r *http.Request) {
+	err := storage.Ping()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Header().Set("Content-Type", "text/plain")
+		fmt.Fprintf(w, "Oh no!")
+	} else {
+		fmt.Fprintf(w, "Success!")
+	}
+}
+
 func main() {
 	log.Print("Started!")
 	if os.Getenv("REDIS_URI") != "" {
@@ -157,6 +168,7 @@ func main() {
 	}
 	router.HandleFunc("/authorize", authorize).Methods("GET")
 	router.HandleFunc("/api", api).Methods("POST")
+	router.HandleFunc("/healthcheck", healthcheck).Methods("GET")
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		tmpl := template.Must(template.ParseFiles("static/index.html"))
 		data := AuthorizePage{

@@ -6,6 +6,7 @@ import ()
 type Store interface {
 	WriteUser(user User)
 	GetUser(id string) *User
+	Ping() error
 }
 
 // Utils
