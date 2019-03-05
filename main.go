@@ -135,7 +135,13 @@ func allowedHostsHandler(allowedHostnames string) func(http.Handler) http.Handle
 
 func main() {
 	log.Print("Started!")
-	storage = store.NewDiskStore()
+	if os.Getenv("REDIS_URI") != "" {
+		storage = store.NewRedisStore(store.NewRedisClient(os.Getenv("REDIS_URI")))
+		log.Println("Using redis storage:", os.Getenv("REDIS_URI"))
+	} else {
+		storage = store.NewDiskStore()
+		log.Println("Using disk storage:")
+	}
 
 	router := mux.NewRouter()
 	// Assumption: Behind a proper web server (nginx/traefik, etc) that removes/replaces trusted headers
