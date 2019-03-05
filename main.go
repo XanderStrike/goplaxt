@@ -136,7 +136,7 @@ func allowedHostsHandler(allowedHostnames string) func(http.Handler) http.Handle
 func main() {
 	log.Print("Started!")
 	if os.Getenv("REDIS_URI") != "" {
-		storage = store.NewRedisStore(store.NewRedisClient(os.Getenv("REDIS_URI")))
+		storage = store.NewRedisStore(store.NewRedisClient(os.Getenv("REDIS_URI"), os.Getenv("REDIS_PASSWORD")))
 		log.Println("Using redis storage:", os.Getenv("REDIS_URI"))
 	} else {
 		storage = store.NewDiskStore()

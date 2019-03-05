@@ -16,7 +16,7 @@ func TestLoadingUser(t *testing.T) {
 	}
 	defer s.Close()
 
-	store := NewRedisStore(NewRedisClient(s.Addr()))
+	store := NewRedisStore(NewRedisClient(s.Addr(), ""))
 
 	s.HSet("user:id123", "username", "halkeye")
 	s.HSet("user:id123", "access", "access123")
@@ -42,7 +42,7 @@ func TestSavingUser(t *testing.T) {
 	}
 	defer s.Close()
 
-	store := NewRedisStore(NewRedisClient(s.Addr()))
+	store := NewRedisStore(NewRedisClient(s.Addr(), ""))
 	originalUser := &User{
 		ID:           "id123",
 		Username:     "halkeye",

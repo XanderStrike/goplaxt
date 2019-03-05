@@ -13,11 +13,11 @@ type RedisStore struct {
 }
 
 // NewRedisClient creates a new redis client object
-func NewRedisClient(addr string) redis.Client {
+func NewRedisClient(addr string, password string) redis.Client {
 	client := redis.NewClient(&redis.Options{
 		Addr:     addr,
-		Password: "", // no password set
-		DB:       0,  // use default DB
+		Password: password,
+		DB:       0,
 	})
 
 	_, err := client.Ping().Result()
