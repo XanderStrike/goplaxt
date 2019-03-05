@@ -133,15 +133,24 @@ func allowedHostsHandler(allowedHostnames string) func(http.Handler) http.Handle
 	}
 }
 
+type healthcheckStatus struct {
+	Storage string
+}
+
 func healthcheck(w http.ResponseWriter, r *http.Request) {
-	err := storage.Ping()
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Header().Set("Content-Type", "text/plain")
-		fmt.Fprintf(w, "Oh no!")
-	} else {
-		fmt.Fprintf(w, "Success!")
+	hasError := false
+	status := &healthcheckStatus{}
+
+	if err := storage.Ping(); err != nil {
+		hasError = true
+		status.Storage = err.Error()
 	}
+
+	w.Header().Set("Content-Type", "text/json")
+	if hasError {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	json.NewEncoder(w).Encode(status)
 }
 
 func main() {
