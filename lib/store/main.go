@@ -1,13 +1,11 @@
 package store
 
-import (
-	"github.com/xanderstrike/goplaxt/lib/user"
-)
+import ()
 
 // Store is the interface for All the store types
 type Store interface {
-	WriteUser(user user.User)
-	GetUser(id string) user.User
+	WriteUser(user User)
+	GetUser(id string) *User
 }
 
 // Utils

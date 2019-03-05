@@ -1,11 +1,8 @@
 package store
 
 import (
-	"fmt"
 	"strings"
 	"time"
-
-	"github.com/xanderstrike/goplaxt/lib/user"
 
 	"github.com/go-redis/redis"
 )
@@ -18,13 +15,16 @@ type RedisStore struct {
 // NewRedisClient creates a new redis client object
 func NewRedisClient(addr string) redis.Client {
 	client := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr:     addr,
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
 
-	pong, err := client.Ping().Result()
-	fmt.Println(pong, err)
+	_, err := client.Ping().Result()
+	// FIXME
+	if err != nil {
+		panic(err)
+	}
 	return *client
 }
 
@@ -36,7 +36,7 @@ func NewRedisStore(client redis.Client) RedisStore {
 }
 
 // WriteUser will write a user object to redis
-func (s RedisStore) WriteUser(user user.User) {
+func (s RedisStore) WriteUser(user User) {
 	data := make(map[string]interface{})
 	data["username"] = user.Username
 	data["access"] = user.AccessToken
@@ -46,17 +46,25 @@ func (s RedisStore) WriteUser(user user.User) {
 }
 
 // GetUser will load a user from redis
-func (s RedisStore) GetUser(id string) user.User {
-	data, _ := s.client.HGetAll("user:" + id).Result()
-	fmt.Printf("Data: %v", data)
-	updated, _ := time.Parse("01-02-2006", data["updated"])
-	user := user.User{
+func (s RedisStore) GetUser(id string) *User {
+	data, err := s.client.HGetAll("user:" + id).Result()
+	// FIXME - return err
+	if err != nil {
+		panic(err)
+	}
+	updated, err := time.Parse("01-02-2006", data["updated"])
+	// FIXME - return err
+	if err != nil {
+		panic(err)
+	}
+	user := User{
 		ID:           id,
 		Username:     strings.ToLower(data["username"]),
 		AccessToken:  data["access"],
 		RefreshToken: data["refresh"],
 		Updated:      updated,
+		store:        s,
 	}
 
-	return user
+	return &user
 }

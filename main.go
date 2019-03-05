@@ -20,6 +20,8 @@ import (
 	"github.com/xanderstrike/plexhooks"
 )
 
+var storage store.Store
+
 type AuthorizePage struct {
 	SelfRoot   string
 	Authorized bool
@@ -50,7 +52,7 @@ func authorize(w http.ResponseWriter, r *http.Request) {
 	code := args["code"][0]
 	result := trakt.AuthRequest(SelfRoot(r), username, code, "", "authorization_code")
 
-	user := store.NewUser(username, result["access_token"].(string), result["refresh_token"].(string))
+	user := store.NewUser(username, result["access_token"].(string), result["refresh_token"].(string), storage)
 
 	url := fmt.Sprintf("%s/api?id=%s", SelfRoot(r), user.ID)
 
@@ -71,13 +73,13 @@ func api(w http.ResponseWriter, r *http.Request) {
 	id := args["id"][0]
 	log.Print(fmt.Sprintf("Webhook call for %s", id))
 
-	user := store.GetUser(id)
+	user := storage.GetUser(id)
 
 	tokenAge := time.Since(user.Updated).Hours()
 	if tokenAge > 1440 { // tokens expire after 3 months, so we refresh after 2
 		log.Println("User access token outdated, refreshing...")
 		result := trakt.AuthRequest(SelfRoot(r), user.Username, "", user.RefreshToken, "refresh_token")
-		user = store.UpdateUser(user, result["access_token"].(string), result["refresh_token"].(string))
+		user.UpdateUser(result["access_token"].(string), result["refresh_token"].(string))
 		log.Println("Refreshed, continuing")
 	}
 
@@ -96,7 +98,8 @@ func api(w http.ResponseWriter, r *http.Request) {
 	// re := plexhooks.ParseWebhook([]byte(match[0]))
 
 	if strings.ToLower(re.Account.Title) == user.Username {
-		trakt.Handle(re, user)
+		// FIXME - make everything take the pointer
+		trakt.Handle(re, *user)
 	} else {
 		log.Println(fmt.Sprintf("Plex username %s does not equal %s, skipping", strings.ToLower(re.Account.Title), user.Username))
 	}
@@ -131,6 +134,9 @@ func allowedHostsHandler(allowedHostnames string) func(http.Handler) http.Handle
 }
 
 func main() {
+	log.Print("Started!")
+	storage = store.NewDiskStore()
+
 	router := mux.NewRouter()
 	// Assumption: Behind a proper web server (nginx/traefik, etc) that removes/replaces trusted headers
 	router.Use(handlers.ProxyHeaders)

@@ -1,4 +1,4 @@
-package user
+package store
 
 import (
 	"fmt"
@@ -46,13 +46,12 @@ func NewUser(username, accessToken, refreshToken string, store store) User {
 }
 
 // UpdateUser updates an existing user object
-func (user User) UpdateUser(accessToken, refreshToken string) User {
+func (user User) UpdateUser(accessToken, refreshToken string) {
 	user.AccessToken = accessToken
 	user.RefreshToken = refreshToken
 	user.Updated = time.Now()
 
 	user.save()
-	return user
 }
 
 func (user User) save() {

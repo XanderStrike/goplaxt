@@ -6,14 +6,17 @@ import (
 	"time"
 
 	"github.com/peterbourgon/diskv"
-	"github.com/xanderstrike/goplaxt/lib/user"
 )
 
 // DiskStore is a storage engine that writes to the disk
 type DiskStore struct{}
 
+func NewDiskStore() *DiskStore {
+	return &DiskStore{}
+}
+
 // WriteUser will write a user object to disk
-func (s DiskStore) WriteUser(user user.User) {
+func (s DiskStore) WriteUser(user User) {
 	s.writeField(user.ID, "username", user.Username)
 	s.writeField(user.ID, "access", user.AccessToken)
 	s.writeField(user.ID, "refresh", user.RefreshToken)
@@ -21,9 +24,9 @@ func (s DiskStore) WriteUser(user user.User) {
 }
 
 // GetUser will load a user from disk
-func (s DiskStore) GetUser(id string) user.User {
+func (s DiskStore) GetUser(id string) *User {
 	updated, _ := time.Parse("01-02-2006", s.readField(id, "updated"))
-	user := user.User{
+	user := User{
 		ID:           id,
 		Username:     strings.ToLower(s.readField(id, "username")),
 		AccessToken:  s.readField(id, "access"),
@@ -31,7 +34,7 @@ func (s DiskStore) GetUser(id string) user.User {
 		Updated:      updated,
 	}
 
-	return user
+	return &user
 }
 
 func (s DiskStore) writeField(id, field, value string) {
