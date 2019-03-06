@@ -2,3 +2,4 @@ package: github.com/xanderstrike/goplaxt
 import:
 - package: github.com/gorilla/mux
 - package: github.com/peterbourgon/diskv
+- package: github.com/go-redis/redis
