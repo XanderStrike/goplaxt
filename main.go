@@ -112,6 +112,10 @@ func allowedHostsHandler(allowedHostnames string) func(http.Handler) http.Handle
 	log.Println("Allowed Hostnames:", allowedHosts)
 	return func(h http.Handler) http.Handler {
 		fn := func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.EscapedPath() == "/healthcheck" {
+				h.ServeHTTP(w, r)
+				return
+			}
 			isAllowedHost := false
 			lcHost := strings.ToLower(r.Host)
 			for _, value := range allowedHosts {
