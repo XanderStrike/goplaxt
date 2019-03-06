@@ -1,26 +1,51 @@
-hash: f68ebf48f0a3f9565d9c8fc7d79f1967e49b9818726943788b1886ee08e14ccd
-updated: 2019-02-26T04:06:05.3877647Z
+hash: ccd304f2d35d523cc8c3f96a95eecc811a2e4c8d2a722bb15d8fa70d347938e3
+updated: 2019-03-06T00:51:38.848261925Z
 imports:
+- name: github.com/go-redis/redis
+  version: b665d8fcf239d92278698ea1ecd5e5aaafef26b4
+  subpackages:
+  - internal
+  - internal/consistenthash
+  - internal/hashtag
+  - internal/pool
+  - internal/proto
+  - internal/util
 - name: github.com/google/btree
   version: 4030bb1f1f0c35b30ca7009e9ebd06849dd45306
 - name: github.com/gorilla/handlers
-  version: 7e6a874cdc0efb71a260254cc0e30d5415b6a5bb
+  version: ac6d24f88de4584385a0cb3a88f953d08a2f7a05
 - name: github.com/gorilla/mux
-  version: 8559a4f775fc329165fe32bd4c2543de8ada8fce
+  version: 15a353a636720571d19e37b34a14499c3afa9991
 - name: github.com/peterbourgon/diskv
   version: 0646ccaebea1ed1539efcab30cae44019090093f
 - name: github.com/xanderstrike/plexhooks
-  version: 119c6bab345809277b8e3eefb5ee1fde32bf15ed
+  version: cbcc0e4d77a5b2cc8f420c6389c93cd26604a72c
 testImports:
+- name: github.com/alicebob/gopher-json
+  version: 5a6b3ba71ee69b77cf64febf8b5a7526ca5eaef0
+- name: github.com/alicebob/miniredis
+  version: 241656666f5bf6808384dd422ac5333c56f4f358
+  subpackages:
+  - server
 - name: github.com/davecgh/go-spew
   version: d8f796af33cc11cb798c1aaeb27a4ebc5099927d
   subpackages:
   - spew
+- name: github.com/gomodule/redigo
+  version: b47395aa17662ff86cb5c52f3bf669bf842ec27a
+  subpackages:
+  - redis
 - name: github.com/pmezard/go-difflib
   version: 5d4384ee4fb2527b0a1256a821ebfc92f91efefc
   subpackages:
   - difflib
 - name: github.com/stretchr/testify
-  version: 3f658bd5ac42cc0b5de5b427e95a480d5726ea76
+  version: 21cb1c2932a2d04c6792d5ad106243c6e36a3a7d
   subpackages:
   - assert
+- name: github.com/yuin/gopher-lua
+  version: 8bfc7677f583b35a5663a9dd934c08f3b5774bbb
+  subpackages:
+  - ast
+  - parse
+  - pm
