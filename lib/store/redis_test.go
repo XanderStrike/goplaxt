@@ -18,10 +18,10 @@ func TestLoadingUser(t *testing.T) {
 
 	store := NewRedisStore(NewRedisClient(s.Addr(), ""))
 
-	s.HSet("user:id123", "username", "halkeye")
-	s.HSet("user:id123", "access", "access123")
-	s.HSet("user:id123", "refresh", "refresh123")
-	s.HSet("user:id123", "updated", "02-25-2019")
+	s.HSet("goplaxt:user:id123", "username", "halkeye")
+	s.HSet("goplaxt:user:id123", "access", "access123")
+	s.HSet("goplaxt:user:id123", "refresh", "refresh123")
+	s.HSet("goplaxt:user:id123", "updated", "02-25-2019")
 
 	expected, err := json.Marshal(&User{
 		ID:           "id123",
@@ -54,10 +54,10 @@ func TestSavingUser(t *testing.T) {
 
 	originalUser.save()
 
-	assert.Equal(t, s.HGet("user:id123", "username"), "halkeye")
-	assert.Equal(t, s.HGet("user:id123", "access"), "access123")
-	assert.Equal(t, s.HGet("user:id123", "refresh"), "refresh123")
-	assert.Equal(t, s.HGet("user:id123", "updated"), "02-25-2019")
+	assert.Equal(t, s.HGet("goplaxt:user:id123", "username"), "halkeye")
+	assert.Equal(t, s.HGet("goplaxt:user:id123", "access"), "access123")
+	assert.Equal(t, s.HGet("goplaxt:user:id123", "refresh"), "refresh123")
+	assert.Equal(t, s.HGet("goplaxt:user:id123", "updated"), "02-25-2019")
 
 	expected, err := json.Marshal(originalUser)
 	actual, err := json.Marshal(store.GetUser("id123"))
