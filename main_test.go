@@ -87,6 +87,21 @@ func TestAllowedHostsHandler_mismatch_hostname(t *testing.T) {
 	assert.Equal(t, http.StatusUnauthorized, rr.Result().StatusCode)
 }
 
+func TestAllowedHostsHandler_alwaysAllowHealthcheck(t *testing.T) {
+	storage = &MockSuccessStore{}
+	f := allowedHostsHandler("unknown.host")
+
+	rr := httptest.NewRecorder()
+	r, err := http.NewRequest("GET", "/healthcheck", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	r.Host = "known.host"
+
+	f(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})).ServeHTTP(rr, r)
+	assert.Equal(t, http.StatusOK, rr.Result().StatusCode)
+}
+
 type MockSuccessStore struct{}
 
 func (s MockSuccessStore) Ping() error                   { return nil }
