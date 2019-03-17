@@ -1,5 +1,9 @@
 # Plaxt
 
+Plex provides webhook integration for all Plex Pass subscribers, and users of their servers. A webhook is a request that the Plex application sends to third party services when a user takes an action, such as watching a movie or episode.
+
+You can ask Plex to send these webhooks to this tool, which will then log those plays in your Trakt account.
+
 This is a full rewrite of my somewhat popular previous iteration. This time it's written in Go
 and deployable with Docker so I can run it on my own infrastructure instead of Heroku.
 
