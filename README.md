@@ -33,6 +33,9 @@ Once you have that, creating your container is a snap:
       -p 8000:8000 \
       xanderstrike/goplaxt:latest
 
+If you are using a Raspberry Pi or other ARM based device, simply use
+`xanderstrike/goplaxt:latest-arm7`.
+
 Then go ahead and start it with:
 
     docker start plaxt
