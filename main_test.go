@@ -124,13 +124,13 @@ func TestHealthcheck(t *testing.T) {
 
 	storage = &MockSuccessStore{}
 	rr = httptest.NewRecorder()
-	http.HandlerFunc(healthcheck).ServeHTTP(rr, r)
+	http.Handler(healthcheckHandler()).ServeHTTP(rr, r)
 	assert.Equal(t, http.StatusOK, rr.Result().StatusCode)
-	assert.Equal(t, "{\"Storage\":\"\"}\n", rr.Body.String())
+	assert.Equal(t, "{\"status\":\"OK\"}\n", rr.Body.String())
 
 	storage = &MockFailStore{}
 	rr = httptest.NewRecorder()
-	http.HandlerFunc(healthcheck).ServeHTTP(rr, r)
-	assert.Equal(t, http.StatusInternalServerError, rr.Result().StatusCode)
-	assert.Equal(t, "{\"Storage\":\"OH NO\"}\n", rr.Body.String())
+	http.Handler(healthcheckHandler()).ServeHTTP(rr, r)
+	assert.Equal(t, http.StatusServiceUnavailable, rr.Result().StatusCode)
+	assert.Equal(t, "{\"status\":\"Service Unavailable\",\"errors\":{\"storage\":\"OH NO\"}}\n", rr.Body.String())
 }

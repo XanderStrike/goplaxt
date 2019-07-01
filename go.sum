@@ -1,3 +1,5 @@
+github.com/DATA-DOG/go-sqlmock v1.3.3 h1:CWUqKXe0s8A2z6qCgkP4Kru7wC11YoAnoupUKFDnH08=
+github.com/DATA-DOG/go-sqlmock v1.3.3/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q5eFN3EC/SaM=
 github.com/alicebob/gopher-json v0.0.0-20180125190556-5a6b3ba71ee6 h1:45bxf7AZMwWcqkLzDAQugVEwedisr5nRJ1r+7LYnv0U=
 github.com/alicebob/gopher-json v0.0.0-20180125190556-5a6b3ba71ee6/go.mod h1:SGnFV6hVsYE877CKEZ6tDNTjaSXYUk6QqoIK6PrAtcc=
 github.com/alicebob/miniredis/v2 v2.8.0 h1:D2PcdeNYhveIx1zwrymjHKlm0wS8CO6U/byxwkwgnco=
@@ -7,6 +9,8 @@ github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e/go.mod h1:nSuG5e5P
 github.com/chzyer/test v0.0.0-20180213035817-a1ea475d72b1/go.mod h1:Q3SI9o4m/ZMnBNeIyt5eFwwo7qiLfzFZmjNmxjkiQlU=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/etherlabsio/healthcheck v0.0.0-20190516102650-2b759a75f4be h1:wATB6UPE3m0x3vfnRuIRfCvrfmRjo1CaHtYxY4yf1IY=
+github.com/etherlabsio/healthcheck v0.0.0-20190516102650-2b759a75f4be/go.mod h1:ZMSmptAGNIg5UAxsJzmw5DMW6uQvxr/hvCklNwtFz1k=
 github.com/go-redis/redis v0.0.0-20190305141034-b665d8fcf239 h1:t0CxOdtLscoWjfxYfrkNKUstzoK3bDQkGYXcVu3/G7A=
 github.com/go-redis/redis v0.0.0-20190305141034-b665d8fcf239/go.mod h1:NAIEuMOZ/fxfXJIrKDQDz8wamY7mA7PouImQ2Jvg6kA=
 github.com/gomodule/redigo v2.0.0+incompatible h1:K/R+8tc58AaqLkqG2Ol3Qk+DR/TlNuhuh457pBFPtt0=
