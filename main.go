@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -13,6 +14,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/etherlabsio/healthcheck"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/xanderstrike/goplaxt/lib/store"
@@ -137,24 +139,13 @@ func allowedHostsHandler(allowedHostnames string) func(http.Handler) http.Handle
 	}
 }
 
-type healthcheckStatus struct {
-	Storage string
-}
-
-func healthcheck(w http.ResponseWriter, r *http.Request) {
-	hasError := false
-	status := &healthcheckStatus{}
-
-	if err := storage.Ping(); err != nil {
-		hasError = true
-		status.Storage = err.Error()
-	}
-
-	w.Header().Set("Content-Type", "text/json")
-	if hasError {
-		w.WriteHeader(http.StatusInternalServerError)
-	}
-	json.NewEncoder(w).Encode(status)
+func healthcheckHandler() http.Handler {
+	return healthcheck.Handler(
+		healthcheck.WithTimeout(5*time.Second),
+		healthcheck.WithChecker("storage", healthcheck.CheckerFunc(func(ctx context.Context) error {
+			return storage.Ping()
+		})),
+	)
 }
 
 func main() {
@@ -181,7 +172,7 @@ func main() {
 	}
 	router.HandleFunc("/authorize", authorize).Methods("GET")
 	router.HandleFunc("/api", api).Methods("POST")
-	router.HandleFunc("/healthcheck", healthcheck).Methods("GET")
+	router.Handle("/healthcheck", healthcheckHandler()).Methods("GET")
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		tmpl := template.Must(template.ParseFiles("static/index.html"))
 		data := AuthorizePage{
