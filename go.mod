@@ -3,6 +3,7 @@ module github.com/xanderstrike/goplaxt
 go 1.12
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.3.3
 	github.com/alicebob/miniredis/v2 v2.8.0
 	github.com/go-redis/redis v0.0.0-20190305141034-b665d8fcf239
 	github.com/google/btree v0.0.0-20180813153112-4030bb1f1f0c
