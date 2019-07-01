@@ -8,7 +8,7 @@ jobs:
       # specify the version
       - image: circleci/golang:1.12
         environment:
-          GO111MODULE: "ON"
+          GO111MODULE: "on"
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -24,5 +24,5 @@ jobs:
       - checkout
 
       # specify any bash command here prefixed with `run: `
-      - run: go get -v -t -d ./...
+      - run: go get -v -d ./...
       - run: go test -v ./...
