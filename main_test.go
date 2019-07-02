@@ -4,6 +4,7 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/stretchr/testify/assert"
 
+	"context"
 	"errors"
 
 	"net/http"
@@ -104,15 +105,15 @@ func TestAllowedHostsHandler_alwaysAllowHealthcheck(t *testing.T) {
 
 type MockSuccessStore struct{}
 
-func (s MockSuccessStore) Ping() error                   { return nil }
-func (s MockSuccessStore) WriteUser(user store.User)     {}
-func (s MockSuccessStore) GetUser(id string) *store.User { return nil }
+func (s MockSuccessStore) Ping(ctx context.Context) error { return nil }
+func (s MockSuccessStore) WriteUser(user store.User)      {}
+func (s MockSuccessStore) GetUser(id string) *store.User  { return nil }
 
 type MockFailStore struct{}
 
-func (s MockFailStore) Ping() error                   { return errors.New("OH NO") }
-func (s MockFailStore) WriteUser(user store.User)     { panic(errors.New("OH NO")) }
-func (s MockFailStore) GetUser(id string) *store.User { panic(errors.New("OH NO")) }
+func (s MockFailStore) Ping(ctx context.Context) error { return errors.New("OH NO") }
+func (s MockFailStore) WriteUser(user store.User)      { panic(errors.New("OH NO")) }
+func (s MockFailStore) GetUser(id string) *store.User  { panic(errors.New("OH NO")) }
 
 func TestHealthcheck(t *testing.T) {
 	var rr *httptest.ResponseRecorder

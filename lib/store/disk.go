@@ -1,6 +1,7 @@
 package store
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"time"
@@ -17,7 +18,7 @@ func NewDiskStore() *DiskStore {
 }
 
 // Ping will check if the connection works right
-func (s DiskStore) Ping() error {
+func (s DiskStore) Ping(ctx context.Context) error {
 	// TODO not sure what can fail here
 	return nil
 }
