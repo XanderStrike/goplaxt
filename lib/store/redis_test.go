@@ -1,6 +1,7 @@
 package store
 
 import (
+	"context"
 	"encoding/json"
 	"testing"
 	"time"
@@ -73,5 +74,5 @@ func TestPing(t *testing.T) {
 	defer s.Close()
 
 	store := NewRedisStore(NewRedisClient(s.Addr(), ""))
-	assert.Equal(t, store.Ping(), nil)
+	assert.Equal(t, store.Ping(context.TODO()), nil)
 }

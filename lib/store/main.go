@@ -1,12 +1,14 @@
 package store
 
-import ()
+import (
+	"context"
+)
 
 // Store is the interface for All the store types
 type Store interface {
 	WriteUser(user User)
 	GetUser(id string) *User
-	Ping() error
+	Ping(ctx context.Context) error
 }
 
 // Utils

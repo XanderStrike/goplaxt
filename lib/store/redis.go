@@ -1,6 +1,7 @@
 package store
 
 import (
+	"context"
 	"strings"
 	"time"
 
@@ -36,8 +37,8 @@ func NewRedisStore(client redis.Client) RedisStore {
 }
 
 // Ping will check if the connection works right
-func (s RedisStore) Ping() error {
-	_, err := s.client.Ping().Result()
+func (s RedisStore) Ping(ctx context.Context) error {
+	_, err := s.client.WithContext(ctx).Ping().Result()
 	return err
 }
 
