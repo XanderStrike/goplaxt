@@ -29,7 +29,7 @@ Once you have that, creating your container is a snap:
       -v <path to configs>:/app/keystore \
       -e TRAKT_ID=<trakt_id> \
       -e TRAKT_SECRET=<trakt_secret> \
-      -e ALLOWED_HOSTNAME=<your public hostname> \
+      -e ALLOWED_HOSTNAMES=<your public hostname(s) comma or space seperated> \
       -p 8000:8000 \
       xanderstrike/goplaxt:latest
 
