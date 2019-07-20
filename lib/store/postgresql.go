@@ -23,8 +23,7 @@ func NewPostgresqlClient(connStr string) *sql.DB {
 	if err != nil {
 		panic(err)
 	}
-
-	_, err = db.Query(`
+	rows, err := db.Query(`
 		CREATE TABLE IF NOT EXISTS users (
 			id varchar(255) NOT NULL,
 			username varchar(255) NOT NULL,
@@ -34,6 +33,7 @@ func NewPostgresqlClient(connStr string) *sql.DB {
 			PRIMARY KEY(id)
 		)
 	`)
+	defer rows.Close()
 	if err != nil {
 		panic(err)
 	}
@@ -50,8 +50,13 @@ func NewPostgresqlStore(db *sql.DB) PostgresqlStore {
 
 // Ping will check if the connection works right
 func (s PostgresqlStore) Ping(ctx context.Context) error {
-	_, err := s.db.Query("SELECT 1")
-	return err
+	conn, err := s.db.Conn(ctx)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+
+	return conn.PingContext(ctx)
 }
 
 // WriteUser will write a user object to postgres
