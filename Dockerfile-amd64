@@ -1,5 +1,5 @@
-FROM golang:alpine as builder
-WORKDIR $GOPATH/src/github.com/xanderstrike/goplaxt/ 
+FROM golang:1.12.7-alpine as builder
+WORKDIR $GOPATH/src/github.com/xanderstrike/goplaxt/
 RUN apk add --no-cache git
 COPY . .
 RUN mkdir /out
