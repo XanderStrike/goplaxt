@@ -1,6 +1,7 @@
 package store
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"time"
@@ -48,7 +49,7 @@ func NewPostgresqlStore(db *sql.DB) PostgresqlStore {
 }
 
 // Ping will check if the connection works right
-func (s PostgresqlStore) Ping() error {
+func (s PostgresqlStore) Ping(ctx context.Context) error {
 	_, err := s.db.Query("SELECT 1")
 	return err
 }
