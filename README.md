@@ -1,5 +1,7 @@
 # Plaxt
 
+[![CircleCI](https://circleci.com/gh/XanderStrike/goplaxt.svg?style=svg)](https://circleci.com/gh/XanderStrike/goplaxt) ![Docker Cloud Build](https://img.shields.io/docker/cloud/build/xanderstrike/goplaxt.svg)
+
 Plex provides webhook integration for all Plex Pass subscribers, and users of their servers. A webhook is a request that the Plex application sends to third party services when a user takes an action, such as watching a movie or episode.
 
 You can ask Plex to send these webhooks to this tool, which will then log those plays in your Trakt account.
