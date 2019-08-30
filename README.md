@@ -46,6 +46,25 @@ Then go ahead and start it with:
 
     docker start plaxt
 
+Alternatively you can use `docker-compose`:
+
+```yaml
+version: "3.4" # This will probably also work with version 2
+services:
+  plaxt:
+    container_name: plaxt
+    environment:
+    - TRAKT_ID=<trakt_id>
+    - TRAKT_SECRET=<trakt_secret>
+    - ALLOWED_HOSTNAMES=<your public hostname(s) comma or space seperated>
+    image: xanderstrike/goplaxt
+    ports:
+    - 8000:8000
+    restart: unless-stopped
+    volumes:
+    - <path to configs>:/app/keystore
+```
+
 ### Contributing
 
 Please do! I accept any and all PRs. My golang is not the best currently, so I'd love some thoughts on worthwhile
