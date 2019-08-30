@@ -1,3 +1,7 @@
+**Notice** I will not be doing any more development on this project as Trakt now has [official support](https://blog.trakt.tv/plex-scrobbler-52db9b016ead) for Plex Webhooks. I'm using em, you should too. 
+
+This tool should continue to work if you're not willing to pay for Trakt VIP, and I'll continue merging PRs, but don't expect your issues to be answered.
+
 # Plaxt
 
 [![CircleCI](https://circleci.com/gh/XanderStrike/goplaxt.svg?style=svg)](https://circleci.com/gh/XanderStrike/goplaxt) ![Docker Cloud Build](https://img.shields.io/docker/cloud/build/xanderstrike/goplaxt.svg)
