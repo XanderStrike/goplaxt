@@ -23,9 +23,10 @@ If you experience any problems or have any suggestions, please don't hesitate to
 Goplaxt is designed to be run in Docker. You can host it right on your Plex server!
 
 To run it yourself, first create an API application through Trakt [here](https://trakt.tv/oauth/applications). Set the
-Redirect URI to be the URI you will hit to access Plaxt, plus `/authorize`. So if you're exposing your server at
-`http://10.20.30.40:8000`, you'll set it to `http://10.20.30.40:8000/authorize`. For the CORS Origin, just use the URI.
-Bare IP addresses and ports are totally fine, but keep in mind your Plaxt instance _must_ be accessible to _all_ the Plex servers you intend to play media from.
+Allowed Hostnames to be the URI you will hit to access Plaxt, plus `/authorize`. So if you're exposing your server at
+`http://10.20.30.40:8000`, you'll set it to `http://10.20.30.40:8000/authorize`. Bare IP addresses and ports are
+totally fine, but keep in mind your Plaxt instance _must_ be accessible to _all_ the Plex servers you intend to 
+play media from.
 
 Once you have that, creating your container is a snap:
 
