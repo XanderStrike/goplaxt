@@ -79,12 +79,22 @@ func HandleMovie(pr plexhooks.PlexResponse, accessToken string) {
 }
 
 func findEpisode(pr plexhooks.PlexResponse) Episode {
-	re := regexp.MustCompile("thetvdb://(\\d*)/(\\d*)/(\\d*)")
-	showID := re.FindStringSubmatch(pr.Metadata.Guid)
+	var traktService = "tvdb"
+	var showID []string
 
-	log.Print(fmt.Sprintf("Finding show for %s %s %s", showID[1], showID[2], showID[3]))
+	re := regexp.MustCompile("tvdb://(\\d*)/(\\d*)/(\\d*)")
+	showID = re.FindStringSubmatch(pr.Metadata.Guid)
 
-	url := fmt.Sprintf("https://api.trakt.tv/search/tvdb/%s?type=show", showID[1])
+	// If Plaxt can't find with TVDB, retry with TheMovieDB
+	if showID == nil {
+		re := regexp.MustCompile("themoviedb://(\\d*)/(\\d*)/(\\d*)")
+		showID = re.FindStringSubmatch(pr.Metadata.Guid)
+		traktService = "tmdb"
+	}
+
+	url := fmt.Sprintf("https://api.trakt.tv/search/%s/%s?type=show", traktService, showID[1])
+
+	log.Print(fmt.Sprintf("Finding show for %s %s %s using %s", showID[1], showID[2], showID[3], traktService))
 
 	resp_body := makeRequest(url)
 
