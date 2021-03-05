@@ -11,12 +11,15 @@ type Ids struct {
 
 // Show represent a show's IDs
 type Show struct {
-	Ids Ids
+	Title string `json:"title"`
+	Year  int    `json:"year"`
+	Ids   Ids
 }
 
 // ShowInfo represent a show
 type ShowInfo struct {
-	Show Show
+	Show    Show
+	Episode Episode
 }
 
 // Episode represent an episode
