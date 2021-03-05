@@ -96,6 +96,30 @@ func findEpisode(pr plexhooks.PlexResponse) Episode {
 		traktService = "tmdb"
 	}
 
+	// If Plaxt can't find with TheMovieDB either, retry with the new Plex TV agent
+	if showID == nil {
+		var episodeID string
+
+		log.Println("Finding episode with new Plex TV agent")
+
+		traktService = pr.Metadata.ExternalGuid[0].Id[:4]
+		episodeID = pr.Metadata.ExternalGuid[0].Id[7:]
+
+		// The new Plex TV agent use episode ID instead of show ID,
+		// so we need to do things a bit differently
+		URL := fmt.Sprintf("https://api.trakt.tv/search/%s/%s?type=episode", traktService, episodeID)
+
+		respBody := makeRequest(URL)
+
+		var showInfo []ShowInfo
+		err := json.Unmarshal(respBody, &showInfo)
+		handleErr(err)
+
+		log.Print(fmt.Sprintf("Tracking %s - S%02dE%02d using %s", showInfo[0].Show.Title, showInfo[0].Episode.Season, showInfo[0].Episode.Number, traktService))
+
+		return showInfo[0].Episode
+	}
+
 	url := fmt.Sprintf("https://api.trakt.tv/search/%s/%s?type=show", traktService, showID[1])
 
 	log.Print(fmt.Sprintf("Finding show for %s %s %s using %s", showID[1], showID[2], showID[3], traktService))
@@ -122,6 +146,7 @@ func findEpisode(pr plexhooks.PlexResponse) Episode {
 			}
 		}
 	}
+
 	panic("Could not find episode!")
 }
 
