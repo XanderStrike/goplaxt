@@ -52,7 +52,7 @@ func authorize(w http.ResponseWriter, r *http.Request) {
 	username := strings.ToLower(args["username"][0])
 	log.Print(fmt.Sprintf("Handling auth request for %s", username))
 	code := args["code"][0]
-	result := trakt.AuthRequest(SelfRoot(r), username, code, "", "authorization_code")
+	result, _ := trakt.AuthRequest(SelfRoot(r), username, code, "", "authorization_code")
 
 	user := store.NewUser(username, result["access_token"].(string), result["refresh_token"].(string), storage)
 
@@ -80,9 +80,15 @@ func api(w http.ResponseWriter, r *http.Request) {
 	tokenAge := time.Since(user.Updated).Hours()
 	if tokenAge > 1440 { // tokens expire after 3 months, so we refresh after 2
 		log.Println("User access token outdated, refreshing...")
-		result := trakt.AuthRequest(SelfRoot(r), user.Username, "", user.RefreshToken, "refresh_token")
-		user.UpdateUser(result["access_token"].(string), result["refresh_token"].(string))
-		log.Println("Refreshed, continuing")
+		result, success := trakt.AuthRequest(SelfRoot(r), user.Username, "", user.RefreshToken, "refresh_token")
+		if success {
+			user.UpdateUser(result["access_token"].(string), result["refresh_token"].(string))
+			log.Println("Refreshed, continuing")
+		} else {
+			log.Println("Refresh failed, skipping")
+			json.NewEncoder(w).Encode("fail")
+			return
+		}
 	}
 
 	body, err := ioutil.ReadAll(r.Body)

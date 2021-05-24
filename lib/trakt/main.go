@@ -16,7 +16,7 @@ import (
 )
 
 // AuthRequest authorize the connection with Trakt
-func AuthRequest(root, username, code, refreshToken, grantType string) map[string]interface{} {
+func AuthRequest(root, username, code, refreshToken, grantType string) (map[string]interface{}, bool) {
 	values := map[string]string{
 		"code":          code,
 		"refresh_token": refreshToken,
@@ -34,13 +34,13 @@ func AuthRequest(root, username, code, refreshToken, grantType string) map[strin
 
 	if resp.Status != "200 OK" {
 		log.Println(fmt.Sprintf("Got a %s, full response:\n%v. Aborting to avoid panic.", resp.Status, resp))
-		return result
+		return result, false
 	}
 
 	err = json.NewDecoder(resp.Body).Decode(&result)
 	handleErr(err)
 
-	return result
+	return result, true
 }
 
 // Handle determine if an item is a show or a movie
