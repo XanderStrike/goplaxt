@@ -45,6 +45,16 @@ func (s DiskStore) GetUser(id string) *User {
 	return &user
 }
 
+func (s DiskStore) DeleteUser(id string) bool {
+	d := diskv.New(diskv.Options{
+		BasePath:     "keystore",
+		Transform:    flatTransform,
+		CacheSizeMax: 1024 * 1024,
+	})
+	d.Erase(id)
+	return true
+}
+
 func (s DiskStore) writeField(id, field, value string) {
 	err := s.write(fmt.Sprintf("%s.%s", id, field), value)
 	if err != nil {

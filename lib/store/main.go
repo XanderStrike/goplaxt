@@ -8,6 +8,7 @@ import (
 type Store interface {
 	WriteUser(user User)
 	GetUser(id string) *User
+	DeleteUser(id string) bool
 	Ping(ctx context.Context) error
 }
 

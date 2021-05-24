@@ -87,6 +87,7 @@ func api(w http.ResponseWriter, r *http.Request) {
 		} else {
 			log.Println("Refresh failed, skipping")
 			json.NewEncoder(w).Encode("fail")
+			storage.DeleteUser(user.ID)
 			return
 		}
 	}

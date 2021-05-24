@@ -113,3 +113,8 @@ func (s PostgresqlStore) GetUser(id string) *User {
 
 	return &user
 }
+
+// TODO: Not Implemented
+func (s PostgresqlStore) DeleteUser(id string) bool {
+	return true
+}

@@ -75,3 +75,8 @@ func (s RedisStore) GetUser(id string) *User {
 
 	return &user
 }
+
+// TODO: Not Implemented
+func (s RedisStore) DeleteUser(id string) bool {
+	return true
+}
