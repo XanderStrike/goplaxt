@@ -79,8 +79,8 @@ func api(w http.ResponseWriter, r *http.Request) {
 
 	if (user == nil) {
 		log.Println("User not found.")
-		json.NewEncoder(w).Encode("user not found")
 		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode("user not found")
 		return
 	}
 
@@ -92,9 +92,9 @@ func api(w http.ResponseWriter, r *http.Request) {
 			user.UpdateUser(result["access_token"].(string), result["refresh_token"].(string))
 			log.Println("Refreshed, continuing")
 		} else {
-			log.Println("Refresh failed, skipping")
-			json.NewEncoder(w).Encode("fail")
+			log.Println("Refresh failed, skipping and deleting user")
 			w.WriteHeader(http.StatusUnauthorized)
+			json.NewEncoder(w).Encode("fail")
 			storage.DeleteUser(user.ID)
 			return
 		}

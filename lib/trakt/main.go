@@ -33,7 +33,7 @@ func AuthRequest(root, username, code, refreshToken, grantType string) (map[stri
 	var result map[string]interface{}
 
 	if resp.Status != "200 OK" {
-		log.Println(fmt.Sprintf("Got a %s, full response:\n%v. Aborting to avoid panic.", resp.Status, resp))
+		log.Println(fmt.Sprintf("Got a %s error while refreshing :(", resp.Status))
 		return result, false
 	}
 

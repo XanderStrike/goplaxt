@@ -62,12 +62,10 @@ func (s DiskStore) GetUser(id string) *User {
 }
 
 func (s DiskStore) DeleteUser(id string) bool {
-	d := diskv.New(diskv.Options{
-		BasePath:     "keystore",
-		Transform:    flatTransform,
-		CacheSizeMax: 1024 * 1024,
-	})
-	d.Erase(id)
+	s.eraseField(id, "username")
+	s.eraseField(id, "updated")
+	s.eraseField(id, "access")
+	s.eraseField(id, "refresh")
 	return true
 }
 
@@ -80,6 +78,15 @@ func (s DiskStore) writeField(id, field, value string) {
 
 func (s DiskStore) readField(id, field string) (string, error) {
 	return s.read(fmt.Sprintf("%s.%s", id, field))
+}
+
+func (s DiskStore) eraseField(id, field string) (error) {
+	d := diskv.New(diskv.Options{
+		BasePath:     "keystore",
+		Transform:    flatTransform,
+		CacheSizeMax: 1024 * 1024,
+	})
+	return d.Erase(fmt.Sprintf("%s.%s", id, field))
 }
 
 func (s DiskStore) write(key, value string) error {
