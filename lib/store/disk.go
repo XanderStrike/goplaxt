@@ -33,12 +33,28 @@ func (s DiskStore) WriteUser(user User) {
 
 // GetUser will load a user from disk
 func (s DiskStore) GetUser(id string) *User {
-	updated, _ := time.Parse("01-02-2006", s.readField(id, "updated"))
+	un, err := s.readField(id, "username")
+	if err != nil {
+		return nil
+	}
+	ud, err := s.readField(id, "updated")
+	if err != nil {
+		return nil
+	}
+	ac, err := s.readField(id, "access")
+	if err != nil {
+		return nil
+	}
+	re, err := s.readField(id, "refresh")
+	if err != nil {
+		return nil
+	}
+	updated, _ := time.Parse("01-02-2006", ud)
 	user := User{
 		ID:           id,
-		Username:     strings.ToLower(s.readField(id, "username")),
-		AccessToken:  s.readField(id, "access"),
-		RefreshToken: s.readField(id, "refresh"),
+		Username:     strings.ToLower(un),
+		AccessToken:  ac,
+		RefreshToken: re,
 		Updated:      updated,
 	}
 
@@ -62,12 +78,8 @@ func (s DiskStore) writeField(id, field, value string) {
 	}
 }
 
-func (s DiskStore) readField(id, field string) string {
-	value, err := s.read(fmt.Sprintf("%s.%s", id, field))
-	if err != nil {
-		panic(err)
-	}
-	return value
+func (s DiskStore) readField(id, field string) (string, error) {
+	return s.read(fmt.Sprintf("%s.%s", id, field))
 }
 
 func (s DiskStore) write(key, value string) error {

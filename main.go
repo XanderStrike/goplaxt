@@ -77,6 +77,13 @@ func api(w http.ResponseWriter, r *http.Request) {
 
 	user := storage.GetUser(id)
 
+	if (user == nil) {
+		log.Println("User not found.")
+		json.NewEncoder(w).Encode("user not found")
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
 	tokenAge := time.Since(user.Updated).Hours()
 	if tokenAge > 1440 { // tokens expire after 3 months, so we refresh after 2
 		log.Println("User access token outdated, refreshing...")
@@ -87,6 +94,7 @@ func api(w http.ResponseWriter, r *http.Request) {
 		} else {
 			log.Println("Refresh failed, skipping")
 			json.NewEncoder(w).Encode("fail")
+			w.WriteHeader(http.StatusUnauthorized)
 			storage.DeleteUser(user.ID)
 			return
 		}
