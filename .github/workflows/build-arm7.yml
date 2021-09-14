@@ -29,5 +29,4 @@ jobs:
           context: .
           file: Dockerfile-arm7
           push: true
-          tags:
-            - xanderstrike/goplaxt:latest-arm7
+          tags: xanderstrike/goplaxt:latest-arm7

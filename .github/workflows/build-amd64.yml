@@ -29,5 +29,4 @@ jobs:
           context: .
           file: Dockerfile-amd64
           push: true
-          tags:
-            - xanderstrike/goplaxt:latest
+          tags: xanderstrike/goplaxt:latest
