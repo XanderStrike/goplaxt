@@ -86,7 +86,7 @@ func findEpisode(pr plexhooks.PlexResponse) Episode {
 	var traktService = "tvdb"
 	var showID []string
 
-	re := regexp.MustCompile("tvdb://(\\d*)/(\\d*)/(\\d*)")
+	re := regexp.MustCompile("tvdb(?:://|[2-5]?-)(\\d*)/(\\d*)/(\\d*)")
 	showID = re.FindStringSubmatch(pr.Metadata.Guid)
 
 	// Retry with TheMovieDB
@@ -120,13 +120,6 @@ func findEpisode(pr plexhooks.PlexResponse) Episode {
 		return showInfo[0].Episode
 	}
 	
-	// Retry with Hama in TVDB mode
-	if showID == nil {
-		re := regexp.MustCompile("com.plexapp.agents.hama://tvdb-(\\d*)/(\\d*)/(\\d*)")
-		showID = re.FindStringSubmatch(pr.Metadata.Guid)
-		traktService = "tvdb"
-	}
-
 	url := fmt.Sprintf("https://api.trakt.tv/search/%s/%s?type=show", traktService, showID[1])
 
 	log.Print(fmt.Sprintf("Finding show for %s %s %s using %s", showID[1], showID[2], showID[3], traktService))
