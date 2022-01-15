@@ -108,14 +108,14 @@ type MockSuccessStore struct{}
 func (s MockSuccessStore) Ping(ctx context.Context) error { return nil }
 func (s MockSuccessStore) WriteUser(user store.User)      {}
 func (s MockSuccessStore) GetUser(id string) *store.User  { return nil }
-func (s MockSuccessStore) DeleteUser(id string) bool  { return true }
+func (s MockSuccessStore) DeleteUser(id string) bool      { return true }
 
 type MockFailStore struct{}
 
 func (s MockFailStore) Ping(ctx context.Context) error { return errors.New("OH NO") }
 func (s MockFailStore) WriteUser(user store.User)      { panic(errors.New("OH NO")) }
 func (s MockFailStore) GetUser(id string) *store.User  { panic(errors.New("OH NO")) }
-func (s MockFailStore) DeleteUser(id string) bool  { return false }
+func (s MockFailStore) DeleteUser(id string) bool      { return false }
 
 func TestHealthcheck(t *testing.T) {
 	var rr *httptest.ResponseRecorder

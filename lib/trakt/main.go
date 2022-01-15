@@ -119,7 +119,7 @@ func findEpisode(pr plexhooks.PlexResponse) Episode {
 
 		return showInfo[0].Episode
 	}
-	
+
 	url := fmt.Sprintf("https://api.trakt.tv/search/%s/%s?type=show", traktService, showID[1])
 
 	log.Print(fmt.Sprintf("Finding show for %s %s %s using %s", showID[1], showID[2], showID[3], traktService))
