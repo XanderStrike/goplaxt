@@ -8,9 +8,9 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"os"
 	"regexp"
 
+	"github.com/xanderstrike/goplaxt/lib/config"
 	"github.com/xanderstrike/goplaxt/lib/store"
 	"github.com/xanderstrike/plexhooks"
 )
@@ -20,8 +20,8 @@ func AuthRequest(root, username, code, refreshToken, grantType string) (map[stri
 	values := map[string]string{
 		"code":          code,
 		"refresh_token": refreshToken,
-		"client_id":     os.Getenv("TRAKT_ID"),
-		"client_secret": os.Getenv("TRAKT_SECRET"),
+		"client_id":     config.TraktClientId,
+		"client_secret": config.TraktClientSecret,
 		"redirect_uri":  fmt.Sprintf("%s/authorize?username=%s", root, url.PathEscape(username)),
 		"grant_type":    grantType,
 	}
@@ -177,7 +177,7 @@ func makeRequest(url string) []byte {
 
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("trakt-api-version", "2")
-	req.Header.Add("trakt-api-key", os.Getenv("TRAKT_ID"))
+	req.Header.Add("trakt-api-key", config.TraktClientId)
 
 	resp, err := client.Do(req)
 	handleErr(err)
@@ -199,7 +199,7 @@ func scrobbleRequest(action string, body []byte, accessToken string) []byte {
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", accessToken))
 	req.Header.Add("trakt-api-version", "2")
-	req.Header.Add("trakt-api-key", os.Getenv("TRAKT_ID"))
+	req.Header.Add("trakt-api-key", config.TraktClientId)
 
 	resp, _ := client.Do(req)
 	defer resp.Body.Close()
