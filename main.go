@@ -17,6 +17,7 @@ import (
 	"github.com/etherlabsio/healthcheck"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/xanderstrike/goplaxt/lib/config"
 	"github.com/xanderstrike/goplaxt/lib/store"
 	"github.com/xanderstrike/goplaxt/lib/trakt"
 	"github.com/xanderstrike/plexhooks"
@@ -65,7 +66,7 @@ func authorize(w http.ResponseWriter, r *http.Request) {
 		SelfRoot:   SelfRoot(r),
 		Authorized: true,
 		URL:        url,
-		ClientID:   os.Getenv("TRAKT_ID"),
+		ClientID:   config.TraktClientId,
 	}
 	tmpl.Execute(w, data)
 }
@@ -77,7 +78,7 @@ func api(w http.ResponseWriter, r *http.Request) {
 
 	user := storage.GetUser(id)
 
-	if (user == nil) {
+	if user == nil {
 		log.Println("User not found.")
 		w.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(w).Encode("user not found")
@@ -197,7 +198,7 @@ func main() {
 			SelfRoot:   SelfRoot(r),
 			Authorized: false,
 			URL:        "https://plaxt.astandke.com/api?id=generate-your-own-silly",
-			ClientID:   os.Getenv("TRAKT_ID"),
+			ClientID:   config.TraktClientId,
 		}
 		tmpl.Execute(w, data)
 	}).Methods("GET")
