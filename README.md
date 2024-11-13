@@ -1,6 +1,4 @@
-**Notice** I will not be doing any more development on this project as Trakt now has [official support](https://blog.trakt.tv/plex-scrobbler-52db9b016ead) for Plex Webhooks. I'm using em, you should too. 
-
-This tool should continue to work if you're not willing to pay for Trakt VIP, and I'll continue merging PRs, but don't expect your issues to be answered.
+**Notice** I will not be doing any more development on this project as Trakt now has [official support](https://blog.trakt.tv/plex-scrobbler-52db9b016ead) for Plex Webhooks. I'm using em, you should too.
 
 # Plaxt
 
@@ -9,14 +7,6 @@ This tool should continue to work if you're not willing to pay for Trakt VIP, an
 Plex provides webhook integration for all Plex Pass subscribers, and users of their servers. A webhook is a request that the Plex application sends to third party services when a user takes an action, such as watching a movie or episode.
 
 You can ask Plex to send these webhooks to this tool, which will then log those plays in your Trakt account.
-
-This is a full rewrite of my somewhat popular previous iteration. This time it's written in Go
-and deployable with Docker so I can run it on my own infrastructure instead of Heroku.
-
-To start scrobbling today, head to [plaxt.astandke.com](https://plaxt.astandke.com) and enter your Plex username!
-It's as easy as can be!
-
-If you experience any problems or have any suggestions, please don't hesitate to create an issue on this repo.
 
 ### Deploying For Yourself
 
@@ -68,9 +58,7 @@ services:
 
 ### Contributing
 
-Please do! I accept any and all PRs. My golang is not the best currently, so I'd love some thoughts on worthwhile
-refactors. I sort of blew through this without adding any tests, so testing won't be a hard requirement for
-contributions until I add some (though they're always welcome, of course).
+This repository is now a public archive but I encourage forking!
 
 ### Security PSA
 
